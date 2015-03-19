@@ -42,7 +42,7 @@
 
 ##### 实用方法
 
-_注意：Myclass#method表示Myclass的实例方法；Myclass.method表示Myclass的类方法；Myclass::CONSTANT表示类中的一个常量。
+_注意：Myclass#method表示Myclass的实例方法；Myclass.method表示Myclass的类方法；Myclass::CONSTANT表示类中的一个常量。_
 
 ```ruby
 
