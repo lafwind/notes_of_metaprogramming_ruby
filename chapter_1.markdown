@@ -20,22 +20,50 @@
  
   * 一个对象的实例变量存在于对象本身，而对象的方法存在于对象自身的类。这即是同一个类的对象共享同样的方法，但不共享实例变量的原因。
 
-* 类
+* 类和模块
 
   * _类自身也是对象_，它也有自己的类，这个类的名字叫*class*。这意味着_一个类的方法（类方法）就是*class*的实例方法_。
 
-  * 一个类是一个增强的Module，增强了_new()_、_allocate()_和_superclass()_这三个方法。
+  * 一个类是一个增强的Module（一组实例方法），增强了_new()_、_allocate()_和_superclass()_这三个方法。
 
   * 绝大多数适用于类的内容也同样适用于模块。反之亦然。
 
+  * 如果希望代码能在别处被包含（include）或当成_命名空间_，应使用模块；当希望代码被实例化或被继承时，选择使用类。
+
+* 常量
+
+  * 常量的作用域不同于变量的作用域。
+
+  * 常量像文件系统一样以树状结构组织。
+
+  * 常量也能修改，但会被Ruby解释器警告！
+
+*总结：对象是一组实例变量外加一个指向类的引用。对象的方法存在于对象的类中，被称为类的实例方法；类是一个对象（Class类的一个实例）外加一组实例方法和对其超类的引用，Class类是Module类的子类，即一个类也是一个模块；和其他对象一样，类作为对象也有自己的方法（比如new()），这些是Class的实例方法；类必须通过引用访问（类的名字）*
+
 ##### 实用方法
 
-* 查找类中的方法：
+_注意：Myclass#method表示Myclass的实例方法；Myclass.method表示Myclass的类方法；Myclass::CONSTANT表示类中的一个常量。
 
 ```ruby
-Array.methods #查找Array中的所有方法
 
-Hash.methods.grep /^re/ #查找Hash中所有以re开头的方法
+# 对象：
+
+obj.instance_variables # 查找对象实例变量
+obj.instance_variable_set("@v", 10) # 让对象获得实例变量@v
+
+# 类：
+
+Myclass.class # 查找类的类（略拗口= =）
+Myclass.superclass # 查找类的超类
+Myclass.instance_methods # 查找类的实例方法
+Array.methods # 查找Array中的所有方法
+Hash.methods.grep /^re/ # 查找Hash中所有以re开头的方法
+
+# 常量：
+
+M.constants # Module#constans()，返回当前范围内的常量，为一个module
+Module.contants # 返回当前程序中所有顶级常量，包括类名。
 ```
+
 
 
