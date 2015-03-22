@@ -61,15 +61,17 @@ my_computer = Computer.new(36, DS.new)
 my_computer.cpu # => * Cpu: 2.16Ghz ($220)
 ```
 
-##### method_missing()方法
+##### Object#method_missing()方法
 
 * method_missing()是Kernel的一个实例方法，所有对象都继承自Kerne模块，所以任何对象都有一个method_missing()方法。
+
 ```ruby
 # method_missing()是个私有方法，不过可以通过send()来调用
 nick.send :method_missing, :my_method # => NoMethodError: undefined method...
 ```
 
 * 每一个来到method_missing()办公桌上的消息都带着被调用方法的名字，以及所调用是传递帝参数和块。
+
 ```ruby
 class Lawyer
   def method_missing(method, *args)
@@ -89,7 +91,8 @@ end
 
 * 覆写method_missing()方法使你可以调用实际上并不存在的方法。
 
-*幽灵方法（Ghost Methods）。被method_missing()方法处理的消息，从调用者角度看，和普通方法没什么区别，但实际上接收者并没有相应的方法。这被称为幽灵方法。
+* 幽灵方法（Ghost Methods）。被method_missing()方法处理的消息，从调用者角度看，和普通方法没什么区别，但实际上接收者并没有相应的方法。这被称为幽灵方法。
+
 ```ruby
 class Table
   def method_missing(id, *args, &block)
@@ -114,10 +117,12 @@ end
 * 幽灵方法的一些缺点：
 
   * 命名冲突（白板类解决）
-  *
+  
   * 比使用普通方法慢，因为在调用幽灵方法时，方法查找的路径一般要长一些。(可以在第一次调用幽灵方法，为它创建一个动态方法，这样以后的调用就可以直接调用这个动态方法)
-  *
-  * 其他神秘bugs
+  
+  * 调用未定义的方法（不是我们所希望的去掉用method_missing()的方法）导致调用method_missing()。（尽可能清晰哪些方法是真的需要调用method_missing()，对于不属于其中的，应回到Kennel#method_missing()（super关键字）。）
+  
+  * 其他神秘bugs（使用迭代的方式开发，先用普通方法来实现功能，然后自信代码没问题后，把这些方法重构到method_missing()。）
   
 * 一些Object类中的方法是被Ruby内部使用的，如果对它们重定义或删除Ruby可会诡异的崩掉。为了避免这种事情的发生，Ruby在这些方前面用下划线打头（*/_/_send/_/_*，*/_/_id/_/_*），并会你折腾它们时发出警告。
 
@@ -155,7 +160,6 @@ my_computer = Computer.new(36, DS.new)
 my_computer.cpu # => * Cpu: 2.16Ghz ($220)
 
 ```
-
 
 ###### 实用方法
 
