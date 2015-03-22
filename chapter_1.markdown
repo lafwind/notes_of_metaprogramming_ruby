@@ -29,6 +29,9 @@
   * 绝大多数适用于类的内容也同样适用于模块。反之亦然。
 
   * 如果希望代码能在别处被包含（include）或当成_命名空间_，应使用模块；当希望代码被实例化或被继承时，选择使用类。
+  
+  * Module的超类是Object；Object是一个类，所以它的类是Class（**这对所有类来说都成立！**）
+  * 所有类最终都继承于Object；Object本身又继承于BasicObject；Class的超类（superclass）是Module；Module的超类是Object
 
 * 常量
 
@@ -42,21 +45,55 @@
 
 * 调用方法
 
-  * 确定方法接收对象。（**self**）
+  * 方法查找：按祖先链寻找。先在接收者所在的类中查找，如找不到，沿着超类，超类的超类这条祖先链往上查找。（Class.ancestors()方法）
   
-  * 按祖先链寻找。先在对象的类中查找，如找不到，沿着父类，父类的父类这条祖先链往上查找。
+    * Object类是所有类默认的超类；BasicObject类是Ruby类体系结构的根节点
+    * 向右一步，再向上
 
-  * Module在祖先链中的位置位于包含该module的类的正上方（生成该module的伪类）。思考一个类中包含多个模块。
+  * 执行方法，需要确定方法接收对象（**self**）。
+  
+    * **每一行代码都会在一个对象中执行--这个对象就是所谓的当前对象**
+    
+    * **self** 可表示当前对象。因为可以用self关键字来访问它
+    
+    * 当调用一个方法时，接收者就成为self。所有的实例变量都是self的实例变量
+    
+    * 未明确指明接收者的方法都在当前self上调用
+    
+    * 代码调用其他对象的方法时，这个对象成为self
+    
+    * 实例变量永远被认定为**self**的实例变量
+    
+    * 没调用任何方法时，self是main对象，这个对象有时被称为顶级上下文（因为这时处在调用堆栈的顶层）
+    
+```ruby
+class MyClass
+  def testing_self
+    @var = 10 # self的一个实例变量
+    my_method() # 跟self.mythod()相同
+    self
+  end
+  
+  def my_method
+    @var = @var + 1
+  end
+end
 
-  * 私有方法：只能被本对象调用。“私有原则”由以下两条规则决定：
+obj = MyClass.new
+obj.testing_self # => <MyClass:0x510000 @var = 11>
+```
 
-    * 如要让其他对象调用方法，应显试指明调用者
+  * 祖先链也包括模块。Module在祖先链中的位置位于包含该module的类的正上方（生成该module的匿名类）。思考一个类中包含多个模块。
 
-    * 私用方法只能隐式调用
+  * 私有方法：只能在自身被调用。“私有原则”由以下两条规则决定：
 
-  * 未指明对象的方法调用其接收者为当前self
+    * 如要方法的接收者不是自己，应明确指明一个接收者
 
-  * kenel模块被object类包含，所有它出现在所有对象的祖先链中。
+    * 私用方法只能被隐含接收者调用
+
+  * 在类和模块定义中（并且在任何方法定义外），self的角色由这个**类或模块**担任。
+
+  * kernel模块被object类包含，所有它出现在所有对象的祖先链中。如果给Kernel模块增加一个方法，这个**内核方法（Kernel Method）**就对所有对象可用。
 
 
 ##### 实用方法
@@ -77,6 +114,8 @@ Myclass.superclass # 查找类的超类
 Myclass.instance_methods # 查找类的实例方法
 Array.methods # 查找Array中的所有方法
 Hash.methods.grep /^re/ # 查找Hash中所有以re开头的方法
+MyClass.ancestors # => 祖先链
+MyClass.superclass # => 超类
 
 # 常量：
 
