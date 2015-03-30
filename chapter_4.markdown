@@ -52,6 +52,25 @@ end
 
 * **类宏**只是普通的方法。
 * **#BasicObject（BasicObject的单件类）的超类是Class。**
+* 可以通过把模块混合到类的eigenclass来定义类方法（类扩展），而类方法其实是单件方法的特例，所以可以把这种技巧推广到任意对象，这种技术称为**对象扩展**
+```ruby
+# Object#extend
+module MyModule
+  def my_method
+    'hello'
+  end
+end
+
+obj = Object.new
+obj.extend MyModule
+obj.my_method # => 'hello'
+
+class MyClass
+  extend MyModule
+end
+
+MyClass.my_extend # => 'hello'
+```
 
 ###### Ruby对象模型
 
@@ -62,4 +81,32 @@ end
 * 除了BasicObject类无超类外，每个类**有且只有一个超类**。这意味着只有一跳向上到BasicObject的祖先链
 * 一个对象的eigenlcass的超类就是这个对象的类；一个类的eigenclass的超类就是这个类的eigenclass
 * 当调用一个方法时，Ruby先向右迈一步进入接收者真正的类，然后向上进祖先链。这就是Ruby查找方法的全部。
+* 
+
+###### 别名
+* 通过**alias**可以给Ruby方法取一个别名
+* **alias**是关键字，不是方法！
+```ruby
+alias :new_name :original_name #没有逗号
+```
+* 当重定义一个方时，并不是真正修改这个方法，相反，会把当前存在的这个方法名字(original\_name)跟定义的新方法绑定起来；只要老的方法还存在绑定(:new_name)，仍旧可以调用
+* 三个步骤写一个环绕别名：
+  * 给方法定义一个别名
+  * 重定义这个方法
+  * 在新的方法中调用老的方法
+  ```ruby
+  # example
+  
+  alias :new_name :original_name
+  def original_name
+    if cond
+      :new_name
+    else
+      # code
+    end
+  end
+  ```
+* 环绕别名潜在的问题：
+  * 猴子补丁，破坏已有的代码
+  * 与加载有关，永远不该把一个环绕别名加载两次（原因？可能会有潜在的猴子补丁？）
 
