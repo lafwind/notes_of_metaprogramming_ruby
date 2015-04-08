@@ -65,11 +65,72 @@ class MyString < String; end
 => String was inherited by MyString
 ```
 * 钩子方法例子：Class#inherited()、**Module#included()**、Module#method_add()、Module#method_removed、Module#method_undefined()
-* 类扩展混入：类扩展和钩子方法的结合
+
+* 类扩展混入---类扩展和钩子方法的结合，步骤（得到一个混入，用来给包含者添加类方法（通常是类宏））：
+
   * 定义一个模块，比如叫MyMixin
+  
   * 在MyMixin中定义一个内部模块（通常叫做ClassMethods），并给它定义一些方法。这些方法最终会成为类方。
-  * 覆写MyMixin#included()方法来用ClassMethods扩展包含者(使用extend()方法)
+  
+  * 覆写MyMixin#included()方法来用ClassMethods扩展包含者(使用extend()方法，该方法会把ClassMethods的方法混入到包含者的eigenclass中，而eigenclass的实例方法即为该类的类方法)
  
-###### Todo 最终代码和注释
+```ruby
+# 完整版
+module MyMixin
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+  
+  # 包含者的实例方法
+  def y
+    "y()"
+  end
+  
+  # 包含者的类方法
+  module ClassMethods
+    def x
+      "x()"
+    end
+  end
+end
+
+# 如果不需要为包含者定义实例方法，
+# 则根本不用定义内部模块，
+# 只要把所有方法都定义在混入本身(self)
+
+module MyMixin
+  def self.included(base)
+    base.extend(self) # MyMixin
+  end
+  
+  #包含者的类方法
+  def x
+    "x()"
+  end
+end
+```
+
+###### 完整代码
+
+```ruby
+module CheckedAttributes
+  def self.included(base)
+    base.extend ClassMethods
+  end
+  
+  module ClassMethods
+    def attr_checked(attribute, &validation)
+      define_method "#{attribute}=" do |value|
+        raise 'Invalid attribute' unless validation.call(value)
+        instance_variable_set("@#{attribute}", value)
+      end
+      
+      define_method attribute do
+        instance_variable_get "@#{attribute}"
+      end
+    end
+  end
+end
+```
 
 
