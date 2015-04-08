@@ -50,6 +50,26 @@ array # => ['a', 'd', 'c']
     object_id; Dir.glob("*")
     => ['a', 'b', 'c'].object_id; Dir.glob("*")
     ```
-    * 
+    
+###### 钩子方法（Hook Methods）
+
+* 钩子方法，像钩子一样挂在一个特定事件上
+```ruby
+class String
+  def self.inherited(subclass)
+    puts "#{self} was inherited by #{subclass}"
+  end
+end
+
+class MyString < String; end
+=> String was inherited by MyString
+```
+* 钩子方法例子：Class#inherited()、**Module#included()**、Module#method_add()、Module#method_removed、Module#method_undefined()
+* 类扩展混入：类扩展和钩子方法的结合
+  * 定义一个模块，比如叫MyMixin
+  * 在MyMixin中定义一个内部模块（通常叫做ClassMethods），并给它定义一些方法。这些方法最终会成为类方。
+  * 覆写MyMixin#included()方法来用ClassMethods扩展包含者(使用extend()方法)
+ 
+###### Todo 最终代码和注释
 
 
