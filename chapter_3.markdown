@@ -14,6 +14,7 @@ def a_method(a, b)
 end
 a_method(1, 2) { |x, y| (x + y) * 3 } # =>10
 ```
+
 * Ruby可以通过Kernel#block_given?()方法来询问当前的方法调用是否包含块
 
 ``` ruby
@@ -96,6 +97,60 @@ defind_methods
 counter # => 0
 inc(4)
 counter # => 4
+```
+
+###### instance_eval()
+
+* 把传递给instance_eval()方法的块称为一个**上下文探针**，因为它就像一个深入到对象的代码片段，对其进行操作
+
+```ruby
+class MyClass
+  def initialize
+    @v = 1
+  end
+end
+
+obj = MyClass.new
+obj.instance_eval do
+  # 运行时，该块的接收者会成为self，因此可以访问接收者的私有方法和实例变量
+  self      # => <MyClass:0x123456 @v=1>
+  @v        # => 1
+end
+
+# instance_eval()方法可以在不碰其他绑定的情况下修改self对象
+v = 2
+obj.instance_eval { @v = v }
+obj.instance_eval { @v } # => 2
+
+# instance_exec()功能和instance_eval()相似，但可传入参数
+class C
+  def initialize
+    @x, @y = 1, 2
+  end
+end
+
+C.new.instance_exec(3) { |arg| (@x + @y) * arg } # => 9
+```
+
+* 洁净室：一个仅是为了在其中执行块的对象
+
+```ruby
+class CleanRoom
+  def complex_calculation
+    # ...
+  end
+  
+  def do_something
+    # ...
+  end
+end
+
+clean_room = CleanRoom.new
+clean_room.instance_eval do
+  if complex_calculation > 10
+    do_something
+  end
+end
 ```
 
 ###### 可调用对象
