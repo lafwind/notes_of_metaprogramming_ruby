@@ -177,8 +177,28 @@ dec.call(2) # => 1
 * 通过`Proc.new()`方法、`Method#to_proc()`方法和**&**操作符可将一种可调用对象转换为另一种可调用对象：
 
 ```ruby
-# example code
+# 块转Proc
+def my_method(&the_proc)
+  the_proc
+end
+
+p = my_method { |name| "Hello, #{name}" } 
+puts p.class            # => Proc
+puts p.call("Lafwind")  # => Hello, Lafwind
+
+# Proc转块
+
+def my_method(greeting)
+  puts "#{greeting}, #{yield}!"
+end
+
+my_proc = Proc.new { "Lafwind" }
+my_method("Hello", &my_proc)
+
+# => Hello, Lafwind!
 ```
+
+* 使用lambda()创建的Proc称为lambda，而使用其他方式创建的则简单称为proc
 
 * 可调用对象的区别：
 
