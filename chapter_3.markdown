@@ -132,6 +132,19 @@ end
 C.new.instance_exec(3) { |arg| (@x + @y) * arg } # => 9
 ```
 
+* instance_eval()会修改self，也会修改接收者的eigenclass（class_eval()会修改self和当前类），instance_eval()的标准含义是**我想修改self**
+
+```ruby
+s1, s2 = "abc", "def"
+
+s1.instance_eval do
+  def swoosh!; reverse; end
+end
+
+s1.swoosh!                # => "cba"
+s2.respond_to?(:swoosh!)  # => false
+```
+
 * 洁净室：一个仅是为了在其中执行块的对象
 
 ```ruby
