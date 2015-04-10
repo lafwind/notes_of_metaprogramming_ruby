@@ -13,7 +13,10 @@ class MyClass
 end
 
 obj = MyClass.new
-obj.my_method(3) # => 6
+obj.my_method(3)        # => 6
+
+# send
+obj.send(:my_method, 3) # => 6
 ```
 * 动态方法：运行时定义方法的技术称为**动态方法**
 
@@ -34,7 +37,7 @@ obj.my_method(2) # => 6
 
 class Computer
   def initialize(computer_id, data_source)
-    @id - computer_id
+    @id = computer_id
     @data_source = data_source
     
     # 如果给String#grep()方法传递一个块（block）,那么对每个满足正则表达式的元素，这个块都会被执行。
@@ -43,7 +46,7 @@ class Computer
     data_source.methods.grep(/^get_(.)_info$/) { Computer.define_component $1 }
   end
   
-  # 此时Computer类是当前隐式的**self**，这意味着在Computer类上调用defin_componen()方法，因此这必然是一个类方法。
+  # 此时Computer类是当前隐式的**self**，这意味着在Computer类上调用define_componen()方法，因此这必然是一个类方法。
   def self.define_component(name)
     define_method(name) {
       info = @data_source.send "get_#{name}_info", @id
@@ -70,7 +73,7 @@ my_computer.cpu # => * Cpu: 2.16Ghz ($220)
 nick.send :method_missing, :my_method # => NoMethodError: undefined method...
 ```
 
-* 每一个来到method_missing()办公桌上的消息都带着被调用方法的名字，以及所调用是传递帝参数和块。
+* 每一个来到method_missing()办公桌上的消息都带着被调用方法的名字，以及所有调用时传递的参数和块。
 
 ```ruby
 class Lawyer
@@ -91,7 +94,7 @@ end
 
 * 覆写method_missing()方法使你可以调用实际上并不存在的方法。
 
-* 幽灵方法（Ghost Methods）。被method_missing()方法处理的消息，从调用者角度看，和普通方法没什么区别，但实际上接收者并没有相应的方法。这被称为幽灵方法。
+* 幽灵方法（Ghost Methods）：被method_missing()方法处理的消息，从调用者角度看，和普通方法没什么区别，但实际上接收者并没有相应的方法。这被称为幽灵方法。
 
 ```ruby
 class Table
@@ -107,7 +110,8 @@ end
 
 * 一个捕获幽灵方法调用并把它们转发另一个对象的对象（有时也会在转发前包装一些自己的逻辑），称为**动态代理**。
 
-* 白板类。在代理类中删除绝大多数继承来的方法。它所拥有的方法Object类还要少。
+* 白板类。在代理类中删除绝大多数继承来的方法。它所拥有的方法比Object类还要少。
+
 * 可通过两种途径来删除一个方法：
 
   * Module#undef_method()方法，它删除所有的（包括继承来的）方法；
