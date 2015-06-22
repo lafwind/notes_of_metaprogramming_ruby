@@ -81,7 +81,6 @@ MyClass.my_extend # => 'hello'
 * 除了BasicObject类无超类外，每个类**有且只有一个超类**。这意味着只有一跳向上到BasicObject的祖先链
 * 一个对象的eigenclass的超类就是这个对象的类；一个类的eigenclass的超类就是这个类的eigenclass
 * 当调用一个方法时，Ruby先向右迈一步进入接收者真正的类，然后向上进祖先链。这就是Ruby查找方法的全部。
-* 
 
 ###### 别名
 * 通过`alias`可以给Ruby方法取一个别名
